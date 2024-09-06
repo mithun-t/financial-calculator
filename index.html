@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+        }
+        input, button {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            display: block;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enhanced Financial Calculations</h1>
+
+        <h2>Calculate Future Value</h2>
+        <input type="number" id="fv_initialValue" placeholder="Enter initial value (₹)">
+        <input type="number" id="fv_inflationRate" placeholder="Enter inflation rate (%)">
+        <input type="number" id="fv_years" placeholder="Enter number of years">
+        <button id="fv_button" onclick="calculateFutureValueHandler()">Calculate Future Value</button>
+        <div id="fv_result" class="result"></div>
+        <div id="fv_error" class="error"></div>
+
+        <h2>Calculate Value Over Years</h2>
+        <input type="number" id="cy_initialValue" placeholder="Enter initial value (₹)">
+        <input type="number" id="cy_percentageIncrease" placeholder="Enter percentage increase (%)">
+        <input type="number" id="cy_years" placeholder="Enter number of years">
+        <button id="cy_button" onclick="calculateValueOverYearsHandler()">Calculate Value Over Years</button>
+        <div id="cy_result" class="result"></div>
+        <div id="cy_error" class="error"></div>
+
+        <h2>Calculate Sum of All Values Over Years</h2>
+        <input type="number" id="sum_initialValue" placeholder="Enter initial value (₹)">
+        <input type="number" id="sum_percentageIncrease" placeholder="Enter percentage increase (%)">
+        <input type="number" id="sum_years" placeholder="Enter number of years">
+        <button id="sum_button" onclick="calculateSumOverYearsHandler()">Calculate Sum of All Values</button>
+        <div id="sum_result" class="result"></div>
+        <div id="sum_error" class="error"></div>
+
+        <h2>Summary of All Calculations</h2>
+        <button onclick="downloadResults()">Download Results as PDF</button>
+        <div id="summary_result" class="result"></div>
+    </div>
+
+    <script>
+        // Calculate Future Value function
+        function calculateFutureValue(presentValue, inflationRate, years) {
+            return presentValue * Math.pow((1 - inflationRate / 100), years);
+        }
+
+        // Calculate Value Over Years function
+        function calculateValueOverYears(initialValue, percentageIncrease, years) {
+            let value = initialValue;
+            let result = `Year 1: ₹${value.toFixed(2)}<br>`;
+            for (let i = 1; i < years; i++) {
+                value += value * (percentageIncrease / 100);
+                result += `Year ${i + 1}: ₹${value.toFixed(2)}<br>`;
+            }
+            return result;
+        }
+
+        // Calculate Sum of All Values Over Years function
+        function calculateSumOverYears(initialValue, percentageIncrease, years) {
+            let value = initialValue;
+            let sum = value;
+            for (let i = 1; i < years; i++) {
+                value += value * (percentageIncrease / 100);
+                sum += value;
+            }
+            return sum;
+        }
+
+        // Handlers with validation for button clicks
+        function calculateFutureValueHandler() {
+            let presentValue = parseFloat(document.getElementById('fv_initialValue').value);
+            let inflationRate = parseFloat(document.getElementById('fv_inflationRate').value);
+            let years = parseInt(document.getElementById('fv_years').value);
+
+            if (isNaN(presentValue) || isNaN(inflationRate) || isNaN(years)) {
+                document.getElementById('fv_error').innerHTML = "Please enter valid numbers for all fields.";
+                return;
+            } else {
+                document.getElementById('fv_error').innerHTML = "";
+            }
+
+            let result = calculateFutureValue(presentValue, inflationRate, years).toFixed(2);
+            document.getElementById('fv_result').innerHTML = `Future Value: ₹${result}`;
+            document.getElementById('summary_result').innerHTML += `Future Value after ${years} years: ₹${result}<br>`;
+        }
+
+        function calculateValueOverYearsHandler() {
+            let initialValue = parseFloat(document.getElementById('cy_initialValue').value);
+            let percentageIncrease = parseFloat(document.getElementById('cy_percentageIncrease').value);
+            let years = parseInt(document.getElementById('cy_years').value);
+
+            if (isNaN(initialValue) || isNaN(percentageIncrease) || isNaN(years)) {
+                document.getElementById('cy_error').innerHTML = "Please enter valid numbers for all fields.";
+                return;
+            } else {
+                document.getElementById('cy_error').innerHTML = "";
+            }
+
+            let result = calculateValueOverYears(initialValue, percentageIncrease, years);
+            document.getElementById('cy_result').innerHTML = result;
+            document.getElementById('summary_result').innerHTML += `Values Over ${years} Years:<br>${result}<br>`;
+        }
+
+        function calculateSumOverYearsHandler() {
+            let initialValue = parseFloat(document.getElementById('sum_initialValue').value);
+            let percentageIncrease = parseFloat(document.getElementById('sum_percentageIncrease').value);
+            let years = parseInt(document.getElementById('sum_years').value);
+
+            if (isNaN(initialValue) || isNaN(percentageIncrease) || isNaN(years)) {
+                document.getElementById('sum_error').innerHTML = "Please enter valid numbers for all fields.";
+                return;
+            } else {
+                document.getElementById('sum_error').innerHTML = "";
+            }
+
+            let sum = calculateSumOverYears(initialValue, percentageIncrease, years).toFixed(2);
+            document.getElementById('sum_result').innerHTML = `Sum of All Values: ₹${sum}`;
+            document.getElementById('summary_result').innerHTML += `Sum of All Values over ${years} years: ₹${sum}<br>`;
+        }
+
+        // Function to download results as PDF
+        function downloadResults() {
+            let summaryContent = document.getElementById('summary_result').innerHTML;
+            if (summaryContent.trim() === "") {
+                alert("No results to download.");
+                return;
+            }
+
+            let link = document.createElement('a');
+            let blob = new Blob([summaryContent], { type: 'application/pdf' });
+            let url = URL.createObjectURL(blob);
+            link.href = url;
+            link.download = 'Financial_Calculations.pdf';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
